@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE = 6384; // onActivityResult request code
     Uri fileUri;
+    MediaPlayer mediaPlayer;
+    int paused;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //startActivityForResult(intent, 1);
-        showChooser();
+        //showChooser();
 
 ;    }
 
@@ -105,29 +107,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void play(View view) throws IOException {
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
 
-        try {
-            mediaPlayer.setDataSource(getApplicationContext(), fileUri);
-        } catch (IllegalArgumentException e) {
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-        } catch (SecurityException e) {
-            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-        } catch (IllegalStateException e) {
-            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            mediaPlayer.prepare();
-        } catch (IllegalStateException e) {
-            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-        }
-        mediaPlayer.start();
 
+            try {
+                mediaPlayer.setDataSource(getApplicationContext(), fileUri);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            } catch (SecurityException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            } catch (IllegalStateException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                mediaPlayer.prepare();
+            } catch (IllegalStateException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            }
+
+            mediaPlayer.start();
+        }
+        else {
+            if (!mediaPlayer.isPlaying()) { //resume only if song is currently paused
+                mediaPlayer.seekTo(paused);
+                mediaPlayer.start();
+            }
+        }
+    }
+
+    public void openFile(View view) {
+        showChooser();
+    }
+
+    public void stop(View view) {
+        mediaPlayer.release();
+        mediaPlayer = null;
+    }
+
+    public void pause(View view){
+        mediaPlayer.pause();
+        paused = mediaPlayer.getCurrentPosition();
     }
 }
