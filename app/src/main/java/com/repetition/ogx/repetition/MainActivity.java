@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Toast.makeText(getApplicationContext(), "testerino", Toast.LENGTH_SHORT).show()
-        Intent intent = new Intent();
+
 
         //startActivityForResult(intent, 1);
         showChooser();
@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void play(View view) throws IOException {
-
         MediaPlayer mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
