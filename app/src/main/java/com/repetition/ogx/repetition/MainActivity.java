@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.media.MediaPlayer;
 import android.media.AudioManager;
 import android.view.View;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -90,14 +91,13 @@ public class MainActivity extends AppCompatActivity {
                     if (data != null) {
                         // Get the URI of the selected file
                         fileUri = data.getData();
-                        Toast.makeText(getApplicationContext(), fileUri.toString(), Toast.LENGTH_SHORT).show();
+
                         try {
                             // Get the file path from the URI
                             final String path = FileUtils.getPath(this, fileUri);
-                            Toast.makeText(MainActivity.this,
-                                    "File Selected: " + path, Toast.LENGTH_LONG).show();
+                            Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
                         } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), "File select error", Toast.LENGTH_SHORT).show();
+                            Log.d("URI", "File select error" + fileUri.toString());
                         }
                     }
                 }
@@ -111,25 +111,25 @@ public class MainActivity extends AppCompatActivity {
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+            Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
 
             try {
                 mediaPlayer.setDataSource(getApplicationContext(), fileUri);
             } catch (IllegalArgumentException e) {
-                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             } catch (SecurityException e) {
-                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             } catch (IllegalStateException e) {
-                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
             try {
                 mediaPlayer.prepare();
             } catch (IllegalStateException e) {
-                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             }
 
             mediaPlayer.start();
@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         else {
             if (!mediaPlayer.isPlaying()) { //resume only if song is currently paused
                 mediaPlayer.seekTo(paused);
+
                 mediaPlayer.start();
             }
         }
@@ -153,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void pause(View view){
         mediaPlayer.pause();
+
         paused = mediaPlayer.getCurrentPosition();
+        Toast.makeText(getApplicationContext(), String.valueOf(mediaPlayer.getDuration()), Toast.LENGTH_LONG).show();
     }
 }
