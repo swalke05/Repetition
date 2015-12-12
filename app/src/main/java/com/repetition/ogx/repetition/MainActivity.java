@@ -15,6 +15,7 @@ import android.view.View;
 import android.util.Log;
 import android.os.Handler;
 
+
 import java.io.IOException;
 
 
@@ -26,6 +27,28 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
     int paused;
     int startTime, endTime;
+
+    Runnable loopRunnable = new Runnable() {
+        @Override
+        public void run() {
+            while (mediaPlayer != null) { //infinite loop
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                if (mediaPlayer.getCurrentPosition() >= 40000){
+                    mediaPlayer.seekTo(startTime);
+                }
+            }
+        }
+
+    };
+
+    Thread loopMusic = new Thread(loopRunnable);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,10 +162,12 @@ public class MainActivity extends AppCompatActivity {
             endTime = 40000;
 
             mediaPlayer.seekTo(startTime);
-            mediaPlayer.setLooping(true);
+            //mediaPlayer.setLooping(true);
             mediaPlayer.start();
 
-            Handler mHandler = new Handler();
+            loopMusic.start(); //Start the thread to loop
+
+           /* Handler mHandler = new Handler();
 
             mHandler.postDelayed(new Runnable() {
                 public void run() {
@@ -158,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-            }, 1000);
+            }, 1000);*/
 
 
 
@@ -177,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void stop(View view) {
+        loopMusic.interrupt();
         mediaPlayer.release();
         mediaPlayer = null;
     }
