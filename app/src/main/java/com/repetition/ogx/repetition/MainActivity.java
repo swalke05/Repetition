@@ -48,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
-    Thread loopMusic = new Thread(loopRunnable);
-
+    Thread loopMusic;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.seekTo(startTime);
             //mediaPlayer.setLooping(true);
             mediaPlayer.start();
+            loopMusic = new Thread(loopRunnable);
 
             loopMusic.start(); //Start the thread to loop
 
