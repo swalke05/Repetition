@@ -13,8 +13,10 @@ import android.media.MediaPlayer;
 import android.media.AudioManager;
 import android.view.View;
 import android.util.Log;
+import android.os.Handler;
 
 import java.io.IOException;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     Uri fileUri;
     MediaPlayer mediaPlayer;
     int paused;
+    int startTime, endTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +135,33 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             }
 
+            startTime = 30000;
+            endTime = 40000;
+
+            mediaPlayer.seekTo(startTime);
+            mediaPlayer.setLooping(true);
             mediaPlayer.start();
+
+            Handler mHandler = new Handler();
+
+            mHandler.postDelayed(new Runnable() {
+                public void run() {
+                    for (int i = 0; i > -1; i++) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (mediaPlayer.getCurrentPosition() >= 40000){
+                            mediaPlayer.seekTo(startTime);
+                        }
+                    }
+                }
+            }, 1000);
+
+
+
         }
         else {
             if (!mediaPlayer.isPlaying()) { //resume only if song is currently paused
