@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import android.content.ActivityNotFoundException;
@@ -14,9 +15,8 @@ import android.media.AudioManager;
 import android.view.View;
 import android.util.Log;
 import android.os.Handler;
-
-
 import java.io.IOException;
+
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 6384; // onActivityResult request code
     Uri fileUri;
     MediaPlayer mediaPlayer;
+    SeekBar seekBar;
+    Handler seekHandler = new Handler();
+
     int paused;
     int startTime, endTime;
 
@@ -54,13 +57,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Toast.makeText(getApplicationContext(), "testerino", Toast.LENGTH_SHORT).show()
 
 
-        //startActivityForResult(intent, 1);
-        //showChooser();
+        seekBar = (SeekBar) findViewById(R.id.seeker);
 
-;    }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -96,16 +97,6 @@ public class MainActivity extends AppCompatActivity {
             // The reason for the existence of aFileChooser
         }
     }
-
-    /*protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            Toast.makeText(getApplicationContext(), "OK", Toast.LENGTH_SHORT).show();
-            fileUri = data.
-        }
-        else {
-            Toast.makeText(getApplicationContext(), "I'm not OkayyyyYYyYyyy", Toast.LENGTH_SHORT).show();
-        }
-     }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -149,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             try {
                 mediaPlayer.prepare();
             } catch (IllegalStateException e) {
@@ -157,36 +149,18 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             }
 
-            startTime = 30000;
+
+            /*startTime = 30000;
             endTime = 40000;
 
             mediaPlayer.seekTo(startTime);
-            //mediaPlayer.setLooping(true);
+            mediaPlayer.setLooping(true);*/
+
             mediaPlayer.start();
+            initializeSeekBar();
             loopMusic = new Thread(loopRunnable);
 
             loopMusic.start(); //Start the thread to loop
-
-           /* Handler mHandler = new Handler();
-
-            mHandler.postDelayed(new Runnable() {
-                public void run() {
-                    for (int i = 0; i > -1; i++) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (mediaPlayer.getCurrentPosition() >= 40000){
-                            mediaPlayer.seekTo(startTime);
-                        }
-                    }
-                }
-            }, 1000);*/
-
-
-
         }
         else {
             if (!mediaPlayer.isPlaying()) { //resume only if song is currently paused
@@ -199,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void openFile(View view) {
         showChooser();
+
+        //initializeSeekBar();
     }
 
     public void stop(View view) {
@@ -211,6 +187,23 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.pause();
 
         paused = mediaPlayer.getCurrentPosition();
-        Toast.makeText(getApplicationContext(), String.valueOf(mediaPlayer.getDuration()), Toast.LENGTH_LONG).show();
+    }
+
+    public void initializeSeekBar() {
+        seekBar.setMax(mediaPlayer.getDuration()/1000); //Set seekBar to song length
+
+
+
+        MainActivity.this.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                if (mediaPlayer != null) {
+                    int currentPosition = mediaPlayer.getCurrentPosition() / 1000;
+                    seekBar.setProgress(currentPosition);
+                }
+                seekHandler.postDelayed(this, 1000);
+            }
+        });
     }
 }
