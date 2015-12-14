@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     Handler seekHandler = new Handler();
 
     int paused;
-    int startTime, endTime;
+    int startTime = -1, endTime = -1;
 
     Runnable loopRunnable = new Runnable() {
         @Override
@@ -43,12 +43,17 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (mediaPlayer.getCurrentPosition() >= 40000){
-                    mediaPlayer.seekTo(startTime);
+                if (mediaPlayer.getCurrentPosition() >= endTime && endTime != -1) {
+                    if (startTime != -1) {
+                        mediaPlayer.seekTo(startTime);
+                    }
+                    else {
+                        startTime = 0;
+                    }
                 }
+
             }
         }
-
     };
 
     Thread loopMusic;
@@ -57,10 +62,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         seekBar = (SeekBar) findViewById(R.id.seeker);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (mediaPlayer != null && fromUser) {
+                    mediaPlayer.seekTo(progress * 1000);
+                }
+            }
+        });
     }
 
     @Override
@@ -149,13 +169,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             }
 
-
-            /*startTime = 30000;
-            endTime = 40000;
-
-            mediaPlayer.seekTo(startTime);
-            mediaPlayer.setLooping(true);*/
-
             mediaPlayer.start();
             initializeSeekBar();
             loopMusic = new Thread(loopRunnable);
@@ -190,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initializeSeekBar() {
-        seekBar.setMax(mediaPlayer.getDuration()/1000); //Set seekBar to song length
+        seekBar.setMax(mediaPlayer.getDuration() / 1000); //Set seekBar to song length
 
 
 
@@ -206,4 +219,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void setStartTime(View view) {
+        startTime = mediaPlayer.getCurrentPosition();
+    }
+
+    public void setEndTime(View view) {
+        endTime = mediaPlayer.getCurrentPosition();
+    }
+
+    public void clearStartTime(View view) {
+        startTime = -1;
+    }
+    public void clearEndTime(View view) {
+        endTime = -1;
+    }
 }
+
