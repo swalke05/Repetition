@@ -1,3 +1,4 @@
+//Spencer Walker
 package com.repetition.ogx.repetition;
 
 import android.support.v7.app.AppCompatActivity;
@@ -169,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("URI", "Might not have set URI correctly" + fileUri.toString());
             }
 
+            startTime = -1;
+            endTime = -1;
             mediaPlayer.start();
             initializeSeekBar();
             loopMusic = new Thread(loopRunnable);
